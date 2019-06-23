@@ -1,5 +1,4 @@
-# HDA-project
-## Indoor human tracking with frequency modulated continuous-wave radar
+# Indoor human tracking with frequency modulated continuous-wave radar
 
 ### Brief To-Do list
 1. Identify a suitable subset of data to be analized (single user + single room?)
