@@ -1,7 +1,7 @@
 # HDA-project
 ## Indoor human tracking with frequency modulated continuous-wave radar
 
-Brief To-Do list
+### Brief To-Do list
 1. Identify a suitable subset of data to be analized (single user + single room?)
 2. Noise filtering with different approaches (chiedere ad Alberto)
 3. Clustering
