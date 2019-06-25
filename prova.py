@@ -10,5 +10,5 @@ n_frame = x.shape[0]
 
 ind = np.random.randint(0, n_frame)
 rda = process.range_doppler(x[ind])
-ind
+rda = 20 * np.log10(rda)
 plt.matshow(rda)
