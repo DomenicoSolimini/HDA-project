@@ -21,4 +21,4 @@ ax.axes.get_yaxis().set_visible(False)
 ax.set_frame_on(False)
 
 # salva immagine
-plt.savefig('prova.png', dpi=400, bbox_inches='tight',pad_inches=-0.1)
+plt.savefig('prova.png', dpi=400, bbox_inches='tight',pad_inches=-0.01)
