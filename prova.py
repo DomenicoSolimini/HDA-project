@@ -22,3 +22,13 @@ ax.set_frame_on(False)
 
 # salva immagine
 plt.savefig('prova.png', dpi=400, bbox_inches='tight',pad_inches=-0.01)
+
+
+import cv2
+
+img = cv2.imread("prova.png")
+dst = cv2.fastNlMeansDenoisingColored(img,None,10,10,7,21)
+
+plt.subplot(121),plt.imshow(img)
+plt.subplot(122),plt.imshow(dst)
+plt.show()
