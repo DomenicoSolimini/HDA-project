@@ -24,13 +24,21 @@ ax.set_frame_on(False)
 plt.savefig('prova.png', dpi=400, bbox_inches='tight',pad_inches=-0.01)
 
 
+# Denoising per immagini a colori
 import cv2
 
-img = cv2.imread("prova.png")
-dst = cv2.fastNlMeansDenoisingColored(img, None, 150, 150, 7, 21)
+img = cv2.imread('prova.png')
+b,g,r = cv2.split(img)           # get b,g,r
+rgb_img = cv2.merge([r,g,b])     # switch it to rgb
 
-plt.figure(figsize=[12,6])
-plt.subplot(121),plt.imshow(img)
-plt.subplot(122),plt.imshow(dst)
 
+dst = cv2.fastNlMeansDenoisingColored(img, None, 50, 50, 7, 21)
+
+b,g,r = cv2.split(dst)           # get b,g,r
+rgb_dst = cv2.merge([r,g,b])     # switch it to rgb
+
+plt.figure(figsize=[10,6])
+plt.subplot(121),plt.imshow(rgb_img)
+plt.subplot(122),plt.imshow(rgb_dst)
+plt.show()
 plt.show()
