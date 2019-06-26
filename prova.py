@@ -42,3 +42,44 @@ plt.subplot(121),plt.imshow(rgb_img)
 plt.subplot(122),plt.imshow(rgb_dst)
 plt.show()
 plt.show()
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+######## provo la pca ########
+# ad occhio sembra meglio (e più figo) #
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+import matplotlib.image as mpimg 
+img = mpimg.imread('prova.png') 
+print(img.shape )
+plt.figure(figsize=[10,6])
+plt.axis('off') 
+plt.imshow(img)
+
+img_r = np.reshape(img, (3164, 8516)) # 2129 * 4 = 8516
+print(img_r.shape )
+
+from sklearn.decomposition import RandomizedPCA
+ipca = RandomizedPCA(20).fit(img_r) 
+img_c = ipca.transform(img_r) 
+print(img_c.shape)
+print(np.sum(ipca.explained_variance_ratio_))
+# spiega il 67% dei dati, possiamo giocare con questo parametro,
+# con 20 buon risultato secondo me: vedere output
+
+
+#OK, now to visualize how PCA has performed this compression, 
+# let's inverse transform the PCA output and 
+#reshape for visualization using imshow.
+temp = ipca.inverse_transform(img_c)
+print(temp.shape)
+
+#reshaping to original size
+temp = np.reshape(temp, (3164, 2129, 4))
+print(temp.shape)
+
+# output
+plt.figure(figsize=[10,6])
+plt.axis('off') 
+plt.imshow(temp) 
+plt.subplot(121),plt.imshow(img)
+plt.subplot(122),plt.imshow(temp)
