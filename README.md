@@ -20,4 +20,5 @@
 	- computing probability of having a randomly generated bump (che ne pensi?)
 6. Tracking
 	- Identifing cluster centroid + dispersion
+	- Regularization of the trajectory
 7. Conclusions
