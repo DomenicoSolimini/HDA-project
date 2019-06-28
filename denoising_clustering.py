@@ -114,7 +114,31 @@ plotdenoised(img1, img4)
 # %%
 img5 = img4.copy()
 img5[img5 < 0.7] = 0.5
-plotdenoised(img1, img4)
+plotdenoised(img1, img5)
+
+# %%
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+######## Black and White image ########
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+data = img5.copy()
+
+def rgb2gray(rgb):
+    """convert a colored image into a bw image"""
+    return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
+
+def plot_noaxbw(img): 
+    """ plot an image without white borders and axis"""
+    fig = plt.figure(figsize=[6,6])
+    ax = fig.add_subplot(111)
+    ax.imshow(img, cmap=plt.get_cmap('gray'), vmin=0, vmax=1)
+    ax.axes.get_xaxis().set_visible(False)
+    ax.axes.get_yaxis().set_visible(False)
+    ax.set_frame_on(False)
+    
+gray = rgb2gray(data)
+plot_noaxbw(gray)
+gray.shape
+
 # %%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ######## Clustering ########
@@ -126,9 +150,6 @@ from sklearn.datasets.samples_generator import make_blobs
 from sklearn.preprocessing import StandardScaler
 from mpl_toolkits.mplot3d import Axes3D
 # %%
-
-data = img4.copy()
-img4.shape # non va! Ci serve un array di dim 2!
 
 fig = plt.figure()
 ax = Axes3D(fig)
