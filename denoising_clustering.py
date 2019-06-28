@@ -120,7 +120,6 @@ plotdenoised(img1, img5)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ######## Black and White image ########
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-data = img5.copy()
 
 def rgb2gray(rgb):
     """convert a colored image into a bw image"""
@@ -135,9 +134,9 @@ def plot_noaxbw(img):
     ax.axes.get_yaxis().set_visible(False)
     ax.set_frame_on(False)
     
-gray = rgb2gray(data)
-plot_noaxbw(gray)
-gray.shape
+data = rgb2gray(img5)
+plot_noaxbw(data)
+data.shape
 
 # %%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
