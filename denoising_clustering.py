@@ -1,6 +1,6 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ######## HDAproject - Denoising and Clustering ########
-# Last update July, 2 2019
+# Last update July, 3 2019
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 import matplotlib.pyplot as plt
@@ -112,7 +112,7 @@ def plot_noaxbw(img):
     ax.set_frame_on(False)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-######## Clustering ########
+######## Pre-Clustering ########
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 def rgb2gray(rgb):
@@ -142,18 +142,27 @@ def remove_line(img_bw):
     threshold = 0.5*img_bw.shape[0]
     # indices of columns to be cleaned
     ind = [i for i in range(img_bw.shape[1]) if np.sum(img_bw[:,i]) > threshold]
-    print(ind)
     img_bw[:, ind] = np.zeros((img_bw.shape[0], len(ind)))
     return img_bw
 
 
 
-def select_points(img_bw):
-    """ Stores all the white points coordinates in an array.
+def select_coord(img_bw):
+    """ Stores the coordinates of all the white points contained
+    in an array.
     """
     return np.array([[i, j] for i in range(img_bw.shape[0])
             for j in range(img_bw.shape[1]) if img_bw[i,j] == 1])
 
+
+
+def select_points(img_bw, img_gray):
+    """ Stores the coordinates of all the white points contained
+    in an array plus the gray level in the associated gray scale
+    image.
+    """
+    return np.array([[i, j, img_gray[i,j]] for i in range(img_bw.shape[0])
+            for j in range(img_bw.shape[1]) if img_bw[i,j] == 1])
 
 # %%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -186,61 +195,76 @@ plot_noaxbw(img5_bw)
 # %%
 
 plot_noaxbw(remove_line(img5_bw))
-# %%
+
 
 # %%
-# parte su dbscan - funziona ma trova troppi cluster - aggiungere visualizzazione
-from sklearn.cluster import DBSCAN
-from sklearn import metrics
-from sklearn.preprocessing import StandardScaler
-from mpl_toolkits.mplot3d import Axes3D
-# %%
-
-data = select_points(img5_bw)
-print("The obtained array is:\n {} ".format(data))
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ######## DBSCAN ########
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+from sklearn.cluster import DBSCAN
+from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
+from mpl_toolkits.mplot3d import Axes3D
 
-model = DBSCAN(eps=50, min_samples=10)
-db = model.fit(data)
 
-core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
-core_samples_mask[db.core_sample_indices_] = True
-labels = db.labels_
+def dbscan(data):
+    """ Perform a DBSCAN clustering.
+    """
+    model = DBSCAN(eps=50, min_samples=10)
+    pred = model.fit(data)
 
-# Number of clusters in labels, ignoring noise if present.
-n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise_ = list(labels).count(-1)
+    core_samples_mask = np.zeros_like(pred.labels_, dtype=bool)
+    core_samples_mask[pred.core_sample_indices_] = True
+    labels = pred.labels_
 
-print('Estimated number of clusters: %d' % n_clusters_)
-print('Estimated number of noise points: %d' % n_noise_)
+    return pred
 
-def plot_dbscan(data):
-    """Plot the discovered clustes with different colors, with respect to
-    a new set of axis, which starts from the cordinate of
-    first white point founded in the denoised picture"""
 
-    unique_labels = set(labels)
-    colors = [plt.cm.Spectral(each)
-          for each in np.linspace(0, 1, len(unique_labels))]
-    for k, col in zip(unique_labels, colors):
-        if k == -1:
-        # Black used for noise.
-            col = [0, 0, 0, 1]
-        class_member_mask = (labels == k)
 
-        xy = data[class_member_mask & core_samples_mask]
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-             markeredgecolor='k', markersize=14)
+def dbscan_info(pred):
+    """ Print basic info about the clustering.
+    """
+    # Number of clusters in labels, ignoring noise if present.
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+    n_noise_ = list(labels).count(-1)
 
-        xy = data[class_member_mask & ~core_samples_mask]
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-             markeredgecolor='k', markersize=6)
+    print('Estimated number of clusters: %d' % n_clusters_)
+    print('Estimated number of noise points: %d' % n_noise_)
 
-    plt.title('Estimated number of clusters: %d' % n_clusters_)
+
+
+def plot_dbscan_2d(data, model):
+    """Plot the discovered clusters with different colors."""
+    fig = plt.figure()
+    plt.scatter(data[:,0], data[:,1], c=model.labels_, s=300)
     plt.show()
-    
-plot_dbscan(data)
+
+
+
+def plot_dbscan_3d(data, model):
+    """Plot the discovered clusters with different colors, showing both
+    the points coordinates and the intensity of the signal.
+    """
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    ax.scatter(data[:,0], data[:,1], data[:,2], c=model.labels_, s=300)
+    ax.view_init(azim=200)
+    plt.show()
+
+
+# %%
+data = select_points(img5_bw, img5_gray)
+print("The obtained array is:\n {} ".format(data))
+
+data = select_coord(img5_bw)
+
+model = dbscan(data)
+plot_dbscan_2d(data, model)
+
+# %%
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+######## K-means ########
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+from sklearn.cluster import KMeans
