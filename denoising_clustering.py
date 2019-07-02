@@ -111,7 +111,6 @@ def plot_noaxbw(img):
     ax.axes.get_yaxis().set_visible(False)
     ax.set_frame_on(False)
 
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ######## Clustering ########
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,7 +133,6 @@ def rgb2bw(rgb):
     return bw
 
 
-# NON FUNZIONA!!!
 def remove_line(img_bw):
     """ Remove the central line from a properly formatted figure. The image
     should have only black and white pixel, the line is expected to be white
@@ -151,45 +149,11 @@ def remove_line(img_bw):
 
 
 def select_points(img_bw):
-    """ NON EFFICIENTE!! VETTORIZZARE I CICLI FOR
-    Stores all the white points coordinates in an array.
+    """ Stores all the white points coordinates in an array.
     """
-    A = np.array([0,0], dtype=int) #needed for inizialitazion - to be removed
-    for i in range(img_bw.shape[0]):
-        for j in range(img_bw.shape[1]):
-            if img_bw[i,j] == 1:
-                A = np.vstack((A, np.array([i,j], dtype=int)))
-    return A[1:,:]
+    return np.array([[i, j] for i in range(img_bw.shape[0])
+            for j in range(img_bw.shape[1]) if img_bw[i,j] == 1])
 
-
-# %%
-# parte su dbscan - funziona ma trova troppi cluster - aggiungere visualizzazione
-from sklearn.cluster import DBSCAN
-from sklearn import metrics
-from sklearn.preprocessing import StandardScaler
-from mpl_toolkits.mplot3d import Axes3D
-# %%
-
-data = A
-
-# fig = plt.figure()
-# ax = Axes3D(fig)
-# ax.scatter(data[:,0], data[:,1], data[:,2], s=300)
-# ax.view_init(azim=200)
-# plt.show()
-
-model = DBSCAN(eps=2.5, min_samples=2)
-model.fit_predict(data)
-pred = model.fit_predict(data)
-
-# fig = plt.figure()
-# ax = Axes3D(fig)
-# ax.scatter(data[:,0], data[:,1], data[:,2], c=model.labels_, s=300)
-# ax.view_init(azim=200)
-# plt.show()
-
-print("number of cluster found: {}".format(len(set(model.labels_))))
-print('cluster for each point: ', model.labels_)
 
 # %%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -223,3 +187,60 @@ plot_noaxbw(img5_bw)
 
 plot_noaxbw(remove_line(img5_bw))
 # %%
+
+# %%
+# parte su dbscan - funziona ma trova troppi cluster - aggiungere visualizzazione
+from sklearn.cluster import DBSCAN
+from sklearn import metrics
+from sklearn.preprocessing import StandardScaler
+from mpl_toolkits.mplot3d import Axes3D
+# %%
+
+data = select_points(img5_bw)
+print("The obtained array is:\n {} ".format(data))
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+######## DBSCAN ########
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+model = DBSCAN(eps=50, min_samples=10)
+db = model.fit(data)
+
+core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
+core_samples_mask[db.core_sample_indices_] = True
+labels = db.labels_
+
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+n_noise_ = list(labels).count(-1)
+
+print('Estimated number of clusters: %d' % n_clusters_)
+print('Estimated number of noise points: %d' % n_noise_)
+
+def plot_dbscan(data):
+    """Plot the founded clustes with different colors, with respect to
+    a new set of cordinates, which starts from the cordinate of
+    first white point in the denoised picture"""
+
+    unique_labels = set(labels)
+    colors = [plt.cm.Spectral(each)
+          for each in np.linspace(0, 1, len(unique_labels))]
+    for k, col in zip(unique_labels, colors):
+        if k == -1:
+        # Black used for noise.
+            col = [0, 0, 0, 1]
+        class_member_mask = (labels == k)
+
+        xy = data[class_member_mask & core_samples_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+             markeredgecolor='k', markersize=14)
+
+        xy = data[class_member_mask & ~core_samples_mask]
+        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+             markeredgecolor='k', markersize=6)
+
+    plt.title('Estimated number of clusters: %d' % n_clusters_)
+    plt.show()
+    
+plot_dbscan(data)
