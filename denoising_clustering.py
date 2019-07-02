@@ -219,9 +219,9 @@ print('Estimated number of clusters: %d' % n_clusters_)
 print('Estimated number of noise points: %d' % n_noise_)
 
 def plot_dbscan(data):
-    """Plot the founded clustes with different colors, with respect to
-    a new set of cordinates, which starts from the cordinate of
-    first white point in the denoised picture"""
+    """Plot the discovered clustes with different colors, with respect to
+    a new set of axis, which starts from the cordinate of
+    first white point founded in the denoised picture"""
 
     unique_labels = set(labels)
     colors = [plt.cm.Spectral(each)
