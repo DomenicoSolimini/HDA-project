@@ -12,6 +12,7 @@
 		2. Soft reference: https://www.quora.com/What-is-randomized-PCA
 	3. SVM ?
 	4. K-means
+	5. trovato a caso, vedere se può servire https://scipy-lectures.org/advanced/image_processing/auto_examples/plot_GMM.html
 3. Noise filtering (dynamic) 
 	- exploiting the knowledge of data evolution through time
 4. Clustering
