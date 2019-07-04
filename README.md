@@ -11,8 +11,8 @@
 		1. Hard reference: http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf
 		2. Soft reference: https://www.quora.com/What-is-randomized-PCA
 	3. SVM ?
-	4. K-means: sarebbe perfetto usare questo ma a me non gira -> https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_ml/py_kmeans/py_kmeans_opencv/py_kmeans_opencv.html
-	5. trovato a caso, vedere se può servire https://scipy-lectures.org/advanced/image_processing/auto_examples/plot_GMM.html
+	4. K-means
+
 3. Noise filtering (dynamic) 
 	- exploiting the knowledge of data evolution through time
 4. Clustering
