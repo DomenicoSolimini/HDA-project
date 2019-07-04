@@ -5,7 +5,6 @@
 from sklearn import mixture
 from matplotlib.patches import Ellipse
 
-
 #%%
 # choose here the number of cluster (2, one is the subject, the other is noise)
 # or maybe there are particular case to investigate...
@@ -30,6 +29,7 @@ def gaussian_mixtures(data):
   
     return(labels, dlabels)
 
+
 #%%
 def plot_mixture(gmm):
     """ Plot the results of the Gaussian Mixture model, the bayesian gmm
@@ -52,7 +52,6 @@ def plot_mixture(gmm):
     
     plt.tight_layout()
     plt.show()
-    
 
 
 #%%
@@ -96,15 +95,14 @@ def plot_with_el(gmm, dpgmm):
     """
     plt.figure(figsize=(13, 10))
     plt.subplot(2,1,1)
-    
+    plt.title('Gaussian Mixture with ellipses')
     plot_gmm(gmm, data, labels)
     plt.subplot(2,1,2)
     
+    plt.title('Bayesian Gaussian Mixture with ellipses')
     plot_gmm(dpgmm, data, dlabels)
     plt.tight_layout()
     plt.show()
-
-
 
 
 #%%
