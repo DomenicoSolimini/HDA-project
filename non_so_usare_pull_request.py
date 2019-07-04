@@ -11,20 +11,24 @@ from matplotlib.patches import Ellipse
 # or maybe there are particular case to investigate...
 n_clusters_ = 2
 
-gmm = mixture.GaussianMixture(n_components = n_clusters_,
-                                  covariance_type="full").fit(data)
-labels = gmm.predict(data)
+def gaussian_mixtures(data):
+    """ Perform a Gaussian Mixture and a Bayesian Gaussian Mixture clustering
+    """
+    gmm = mixture.GaussianMixture(n_components = n_clusters_,covariance_type="full").fit(data)
+    labels = gmm.predict(data)
 
-print("The estimated mean vectors for gmm are:\n {} \n".format(gmm.means_))
-print("The estimated covariance matrices for gmm are:\n {}\n ".format(gmm.covariances_))
+    print("The estimated mean vectors for gmm are:\n {} \n".format(gmm.means_))
+    print("The estimated covariance matrices for gmm are:\n {}\n ".format(gmm.covariances_))
 
 
-dpgmm = mixture.BayesianGaussianMixture(n_components=n_clusters_,
+    dpgmm = mixture.BayesianGaussianMixture(n_components=n_clusters_,
                                         covariance_type='full').fit(data)
-dlabels = dpgmm.predict(data)
+    dlabels = dpgmm.predict(data)
 
-print("The estimated mean vectors for bgmm are:\n {} \n".format(dpgmm.means_))
-print("The estimated covariance matrices for bgmm are:\n {} ".format(dpgmm.covariances_))
+    print("The estimated mean vectors for bgmm are:\n {} \n".format(dpgmm.means_))
+    print("The estimated covariance matrices for bgmm are:\n {} ".format(dpgmm.covariances_))
+  
+    return(labels, dlabels)
 
 #%%
 def plot_mixture(gmm):
@@ -49,7 +53,7 @@ def plot_mixture(gmm):
     plt.tight_layout()
     plt.show()
     
-plot_mixture(gmm)
+
 
 #%%
 def draw_ellipse(position, covariance, ax=None, **kwargs):
@@ -71,6 +75,7 @@ def draw_ellipse(position, covariance, ax=None, **kwargs):
         ax.add_patch(Ellipse(position, nsig * width, nsig * height,
                              angle, **kwargs))
         
+        
 def plot_gmm(gmm, X, labels, label=True, ax=None):
     """ apply draw_ellipse to gmm output
     """
@@ -84,6 +89,7 @@ def plot_gmm(gmm, X, labels, label=True, ax=None):
     w_factor = 0.2 / gmm.weights_.max()
     for pos, covar, w in zip(gmm.means_, gmm.covariances_, gmm.weights_):
         draw_ellipse(pos, covar, alpha=w * w_factor)
+        
         
 def plot_with_el(gmm, dpgmm):
     """ plot the gmm and dpgmm figure with ellipses
@@ -99,7 +105,7 @@ def plot_with_el(gmm, dpgmm):
     plt.show()
 
 
-plot_with_el(gmm, dpgmm)   
+
 
 #%%
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -107,8 +113,23 @@ plot_with_el(gmm, dpgmm)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 from sklearn.cluster import KMeans
 n_clusters_ = 2
-kmeans = KMeans(init='k-means++', n_clusters=n_clusters_, n_init=10)
-output = kmeans.fit(data)
-plt.subplot(1,1,1)
-plt.title('Clusters identified using K-means: %d' % n_clusters_)
-plt.scatter(data[:, 0], data[:, 1], c=output.labels_)
+def k_means(data):
+    """ Performs a k-means clustering and plot the obtained result
+    """
+    kmeans = KMeans(init='k-means++', n_clusters=n_clusters_, n_init=10)
+    output = kmeans.fit(data)
+    plt.subplot(1,1,1)
+    plt.title('Clusters identified using K-means: %d' % n_clusters_)
+    plt.scatter(data[:, 0], data[:, 1], c=output.labels_)
+    plt.show()
+  
+
+#%%
+gaussian_mixtures(data)
+
+plot_mixture(gmm)
+
+plot_with_el(gmm, dpgmm)   
+
+k_means(data)
+
