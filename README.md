@@ -6,8 +6,6 @@
 	1. openCV non local means
 	https://docs.opencv.org/3.2.0/d5/d69/tutorial_py_non_local_means.html
 	2. randomized pca 
-	https://shankarmsy.github.io/posts/pca-sklearn.html
-	Something about it:
 		1. Hard reference: http://users.cms.caltech.edu/~jtropp/papers/HMT11-Finding-Structure-SIREV.pdf
 		2. Soft reference: https://www.quora.com/What-is-randomized-PCA
 	3. SVM ?
