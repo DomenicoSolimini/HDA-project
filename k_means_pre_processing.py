@@ -17,6 +17,8 @@ def k_means_preproc(image, n_clust):
     return segmented_img.reshape(image.shape)
     
 def plot_result(image, segmented_image):
+    """Plot the result of k_means_preproc
+    """
     fig, ax = plt.subplots(1, 2, figsize=(16, 6),
                        subplot_kw=dict(xticks=[], yticks=[]))
     fig.subplots_adjust(wspace=0.05)
