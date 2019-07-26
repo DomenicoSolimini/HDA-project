@@ -24,3 +24,14 @@ The proposed methods are discussed via experimental analyses
 and graphical performance results, since they all belong to the
 unsupervised learning field. We eventually consider our system
 ready to provide solutions for real-world problems.
+
+## Repository Description
+Three jupyter notebooks describe the main steps of the analysis:
+1. Preprocessing and Feature Extraction,
+2. Spline and SOM,
+3. Autoencoders.
+
+In addition, three python files are used to store useful functions:
+1. process.py,
+2. denoising.py,
+3. clustering.py.
