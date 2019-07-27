@@ -18,7 +18,7 @@ proposed algorithm and extend its application to a wide range
 of demands, e.g. surveillance systems based on sensors networks
 and person identification trough the use of further classification
 tasks. We also investigate the use of a dimensionality reduction
-system, i.e. several architectures of auto-encoder models, which
+system, i.e. several architectures of autoencoder models, which
 can compress and decode the signal with varying loss of accuracy.
 The proposed methods are discussed via experimental analyses
 and graphical performance results, since they all belong to the
