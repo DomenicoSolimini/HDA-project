@@ -1,4 +1,4 @@
-# Indoor Human Walking Path Reconstruction from a FMWC Radar Signal
+# Indoor Human Walking Path Reconstruction from a FMCW Radar Signal
 
 ## Introduction
 Surveillance systems call for new solutions. Modern
