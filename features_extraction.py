@@ -33,7 +33,7 @@ def means_vars(CODE, PATH_IN, PATH_OUT):
     for ind in range(n_frame):
         rd = process.range_doppler(x[ind])
         rda[ind, :, :] = np.array(20 * np.log10(rd))
-        rd -= np.amax(rd)
+        rda -= np.amax(rda)
         #rd[rd < -45] = -45
 
     print('RDA:\t\t DONE')
