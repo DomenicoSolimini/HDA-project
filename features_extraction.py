@@ -16,9 +16,6 @@ def means_vars(CODE, PATH_IN, PATH_OUT):
     """ Performs the entire preprocessing pipeline over a single hdf5 file.
     WARNING: When file dimension is huge, memory error occurs.
     """
-    print('Image no.',CODE)
-    start_time = time.time()
-
     # IMPORTING FILE
     hdf = h5py.File(PATH_IN+'target'+CODE+'.hdf5','r')
 
@@ -79,21 +76,14 @@ def means_vars(CODE, PATH_IN, PATH_OUT):
         pickle.dump((means_true, vars_true), outfile)
 
     print('Saving Data:\t DONE')
-
-    end_time = time.time()
-
-    print('Total Time: %.2f' % (end_time-start_time),'sec.')
-
-    print('***** Job Done! *****')
     print('')
 
 # %%
 
 # For each file in PATH_IN directory, means_vars() is applied
 # every file name needs to be formatted as target+CODE+.hdf5
-
-PATH_IN = 'idrad/train/'
-PATH_OUT = 'means_vars_finale/'
+PATH_IN = '/Users/orientamento/Desktop/idrad/train copy/'
+PATH_OUT = '/Users/orientamento/Desktop/idrad/means_vars_finale/'
 
 # os.system('ls '+ PATH_IN + ' > list.txt')
 # f = open("list.txt", "r")
@@ -102,14 +92,25 @@ PATH_OUT = 'means_vars_finale/'
 
 files = listdir(PATH_IN)
 codes = []
+total_time = 0
 
-for line in files:
-    codes.append(line[6:-5])
+for n, line in enumerate(files):
+    print('Processing file', line)
+    CODE = line[6:-5]
+    if line[:6] == 'target' and line[-5:] == '.hdf5':
+        print('Code:', CODE)
 
-for CODE in codes:
-    means_vars(CODE, PATH_IN, PATH_OUT)
+        start_time = time.time()
+        means_vars(CODE, PATH_IN, PATH_OUT)
+        end_time = time.time()
+        print('Time Required: %.2f' % (end_time-start_time),'sec')
+	#total_time += (end_time - start_time)
+    else:
+        print('Not able to process this file!')
 
-print('FINITOOOO!!!')
+print(n, 'files processed')
+print('Average Time Required: %.2f' % total_time/n)
+print('Start merging the files')
 
 # creates two files containing all data retrieved so far
 
@@ -135,3 +136,6 @@ with open(PATH_OUT+'means_array.p', 'wb') as outfile:
 
 with open(PATH_OUT+'vars_array.p', 'wb') as outfile:
         pickle.dump(vars_array, outfile)
+
+print('THE END!')
+
