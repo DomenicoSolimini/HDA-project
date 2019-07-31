@@ -1,10 +1,11 @@
 # Indoor Human Walking Path Reconstruction from a FMCW Radar Signal
 
 ## Repository Description
-Three jupyter notebooks describe the main steps of the analysis:
-1. Preprocessing and Feature Extraction,
-2. Spline and SOM,
-3. Autoencoders.
+Five jupyter notebooks describe the main steps of the analysis. The first one is reprocessing_and_feature_extraction, then the regulazitaion techniques are described in
+1. Spline
+2. SOM,
+3. Autoencoders-FFNN
+4. Autoencoder-CNN
 
 In addition, three python files are used to store useful functions:
 1. process.py,
