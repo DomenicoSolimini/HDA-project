@@ -10,8 +10,8 @@ from keras.utils import plot_model
 from keras.callbacks import EarlyStopping
 from keras.layers import Input, Dense, Flatten, Reshape, Dropout
 
-DATA_AUG_PATH = 'data_augmented.pkl'
-DATA_NOISY_PATH = 'data_noisy.pkl'
+DATA_AUG_PATH = 'data_augmented.npy'
+DATA_NOISY_PATH = 'data_noisy.npy'
 MODEL_PATH = 'autoencoder.pkl'
 TRACK_SHAPE = (496, 3)
 
@@ -33,16 +33,13 @@ def load_data(data_aug_path, data_noisy_path, shape):
     """
     """
     # Import data
-    with open(data_noisy_path, 'rb') as infile:
-        x_data = pickle.load(infile)
+    x_data = np.load(data_noisy_path)
+    print(x_data.shape)
+    y_data = np.load(data_aug_path)
+    print(y_data.shape)
 
-    with open(data_aug_path, 'rb') as infile:
-        y_data = pickle.load(infile)
     # Divide in Train, Validation and Test sets and separately scale data
-    x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, random_state=42, test_size=0.4)
-    #x_test, x_val, y_tra = train_test_split(x_val, random_state=42, test_size=0.5)  # LEVARE IL TEST SET UNA VOLTA FINITO!!!
-
-    print(x_val.shape, x_train.shape)
+    x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, random_state=42, test_size=0.2)
     # Split sets in subsequent windows
     x_train, x_val, y_train, y_val = [split(set_, width=15, stride=1) for set_ in (x_train, x_val, y_train, y_val)]
 
@@ -51,13 +48,13 @@ def load_data(data_aug_path, data_noisy_path, shape):
 
 
 def create_autoencoder():
-    input_seq = Input(shape=(15, 3))
+    input_seq = Input(shape=(15, 3, 1))
     X = Flatten()(input_seq)
     X = Dense(20, activation='tanh')(X)
     encoded = Dense(10, activation='tanh')(X)
     X = Dense(20, activation='tanh')(encoded)
     X = Dense(45, activation='tanh')(X)
-    decoded = Reshape((15, 3))(X)
+    decoded = Reshape((15, 3, 1))(X)
 
     autoencoder = Model(input_seq, decoded)
     autoencoder.compile(optimizer="Nadam", loss="mean_absolute_error")
@@ -71,6 +68,9 @@ def train_model(x_train, x_val, y_train, y_val, model, max_epochs=250, plot=True
     """
     """
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=5)
+    # Reshape sets to fit the expected model dimension
+
+    x_train, x_val, y_train, y_val = [np.expand_dims(set_, axis=3) for set_ in (x_train, x_val, y_train, y_val)]
 
     history = model.fit(x_train, y_train,
                     epochs = max_epochs,

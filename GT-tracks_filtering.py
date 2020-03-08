@@ -57,7 +57,7 @@ def predict_track(data, model, frame_width=15):
     maxs = splitted_data.max(axis=(1,2), keepdims=True)
     splitted_data = (splitted_data-mins)/(maxs-mins)
     # Compute the predicted data for each splitted frame
-    predicted_data = model.predict(splitted_data)
+    predicted_data = model.predict(np.expand_dims(splitted_data, axis= 3)).squeeze()
     # Rescale the output
     predicted_data = predicted_data * (maxs-mins) + mins
 
@@ -109,7 +109,8 @@ def main():
     # Load track data
     tracks = import_data()
     # Select one track
-    track_radar, track_gt = tracks[args.track].values()
+    track_radar = tracks[args.track]['radar1trg']
+    track_gt = tracks[args.track]['truth1trg']
     # Compute minimum and maximum for each component
     min_ = np.min(track_radar, axis=0)
     max_ = np.max(track_radar, axis=0)
@@ -122,6 +123,7 @@ def main():
     # Convert the track in cartesian coordinates and compute the RMSD
     rmsd = compute_RMSD(convert_to_cartesian(track_radar_pred), track_gt.T)
     print('RMSD: %.3f' % rmsd)
+
 
 
 if __name__ == "__main__":

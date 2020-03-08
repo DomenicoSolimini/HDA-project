@@ -3,8 +3,8 @@ import numpy as np
 import pickle
 
 DATA_PATH = './all_tracks/'
-OUT_NOISY_PATH = 'data_noisy.pkl'
-OUT_AUG_PATH = 'data_augmented.pkl'
+OUT_NOISY_PATH = 'data_noisy.npy'
+OUT_AUG_PATH = 'data_augmented.npy'
 
 
 def import_data(data_path=DATA_PATH, shape=None, axis=0):
@@ -41,18 +41,11 @@ def min_max_scale(data):
     """
     Scale separately each component. Data has shape [num_frames, frame_width, num_components].
     """
-    # Keep the number of time instants
-    frame_width = data.shape[1]
-
     # Compute separately min and max for each component
-    min_, max_ = data.min(axis=1), data.max(axis=1)
-
-    # Broadcast min_ and max_ array to the shape of data
-    min_ = np.stack([np.tile(x, (frame_width, 1)) for x in min_])
-    max_ = np.stack([np.tile(x, (frame_width, 1)) for x in max_])
-
+    mins = data.min(axis=1, keepdims=True)
+    maxs = data.max(axis=1, keepdims=True)
     # Return normalized data
-    return (data - min_) / (max_ - min_)
+    return (data - mins) / (maxs - mins)
 
 
 
@@ -68,19 +61,19 @@ def GenerateNoisyData(data, seed, variance):
 def main(variance):
     data = import_data()
     data = min_max_scale(data)
+
     noisy_data_1 = GenerateNoisyData(data, 1, variance)
     noisy_data_2 = GenerateNoisyData(data, 2, variance)
 
     data_noisy = np.concatenate((data, noisy_data_1, noisy_data_2), axis=0)
     data_augmented = np.concatenate((data, data, data), axis=0)
 
-    with open(OUT_NOISY_PATH, 'wb') as outfile:
-        pickle.dump(data, outfile)
+    np.save(OUT_NOISY_PATH, data)
     print('Data noisy saved in ', OUT_NOISY_PATH)
 
-    with open(OUT_AUG_PATH, 'wb') as outfile:
-        pickle.dump(data, outfile)
+    np.save(OUT_AUG_PATH, data)
     print('Data augmented saved in ', OUT_AUG_PATH)
+
 
 
 if __name__ == "__main__":
