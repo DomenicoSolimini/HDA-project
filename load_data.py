@@ -49,32 +49,35 @@ def min_max_scale(data):
 
 
 
-def GenerateNoisyData(data, seed, variance):
+def GenerateNoisyData(data, seed, p, variance):
     """ Return Data with a gaussian noise of mean=0 and var=0.05
     """
     np.random.seed(seed)
     noise = np.random.normal(loc = 0, scale = np.sqrt(variance), size = data.shape)
+    mask = np.random.binomial(1, 0.1, size = data.shape)
+    noise[mask == 0] = 0
     return data + noise
 
 
 
-def main(variance):
+def main():
     data = import_data()
     data = min_max_scale(data)
 
-    noisy_data_1 = GenerateNoisyData(data, 1, variance)
-    noisy_data_2 = GenerateNoisyData(data, 2, variance)
+    noisy_data_1 = GenerateNoisyData(data, seed = 1, p = 0.1, variance = 0.5)
+    noisy_data_2 = GenerateNoisyData(data, seed = 2, p = 0.4, variance = 0.05)
 
     data_noisy = np.concatenate((data, noisy_data_1, noisy_data_2), axis=0)
     data_augmented = np.concatenate((data, data, data), axis=0)
 
-    np.save(OUT_NOISY_PATH, data)
+    np.save(OUT_NOISY_PATH, data_noisy)
     print('Data noisy saved in ', OUT_NOISY_PATH)
 
-    np.save(OUT_AUG_PATH, data)
+    np.save(OUT_AUG_PATH, data_augmented)
     print('Data augmented saved in ', OUT_AUG_PATH)
 
-
+    print(f"Data noise shape:{data_noisy.shape}" )
+    print(f"Data augmented shape:{data_augmented.shape}" )
 
 if __name__ == "__main__":
-    main(0.05)
+    main()

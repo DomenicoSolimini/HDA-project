@@ -61,7 +61,10 @@ def predict_track(data, model, frame_width=15):
     # Rescale the output
     predicted_data = predicted_data * (maxs-mins) + mins
 
-    return np.concatenate((predicted_data[0], predicted_data[1:, 14, :]))
+    distance = np.concatenate((np.flip(predicted_data[0, :, 0]), predicted_data[1:, 0, 0]))
+
+    angle_vel = np.concatenate((predicted_data[0, :, 1:], predicted_data[1:, 14, 1:]))
+    return np.concatenate((distance[:,np.newaxis], angle_vel), axis=1)
 
 
 
