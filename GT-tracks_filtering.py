@@ -1,13 +1,11 @@
 import numpy as np
-import pandas as pd
+import argparse
+import pickle
 import os
 import re
 import matplotlib.pyplot as plt
-import pickle
-
 
 DATA_PATH = "gt_tracks/"
-
 
 def import_data(data_path=DATA_PATH, shape=None, axis=0):
 
@@ -87,32 +85,43 @@ def plot_comparison(track_original, track_predicted, var_index, savefig_path=Fal
 
 
 
-def convert_to_cartesian(track):
-    x = track[:,0]*np.cos(track[:,1])
-    y = track[:,0]*np.sin(track[:,1])
+def convert_to_cartesian(track_radar):
+    x = track_radar[:,0]*np.cos(track_radar[:,1])
+    y = track_radar[:,0]*np.sin(track_radar[:,1])
 
     return np.array((x,y))
 
 
 
+def compute_RMSD(track1, track2):
+    return np.sqrt(np.nanmean(np.power(track1 - track2, 2)))
+
+
+
 def main():
+    # Load predictor from file
     with open('autoencoder.pkl', 'rb') as file:
         predictor = pickle.load(file)
-
+    # Define input argument (name of the track to be selected)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--track', type=str, default='circle_2')
+    args = parser.parse_args()
+    # Load track data
     tracks = import_data()
-    print(tracks.keys())
-    track_radar, track_gt = tracks['circle_2'].values()
-
+    # Select one track
+    track_radar, track_gt = tracks[args.track].values()
     # Compute minimum and maximum for each component
     min_ = np.min(track_radar, axis=0)
     max_ = np.max(track_radar, axis=0)
     # Compute the normalized track component-wise
     track_radar_norm = (track_radar - min_) / (max_ - min_)
-
+    # Compute the predicted track and renormalize it
     track_radar_pred = predict_track(track_radar_norm, predictor) * (max_ - min_) + min_
-
+    # Plot the comparison between radar tracks (measured and predicted)
     plot_comparison(track_radar, track_radar_pred, var_index=0)
-
+    # Convert the track in cartesian coordinates and compute the RMSD
+    rmsd = compute_RMSD(convert_to_cartesian(track_radar_pred), track_gt.T)
+    print('RMSD: %.3f' % rmsd)
 
 
 if __name__ == "__main__":
