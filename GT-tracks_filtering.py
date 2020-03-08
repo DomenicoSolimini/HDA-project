@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+import re
 import matplotlib.pyplot as plt
 import pickle
 
@@ -8,40 +9,27 @@ import pickle
 DATA_PATH = "gt_tracks/"
 
 
-
 def import_data(data_path=DATA_PATH, shape=None, axis=0):
-    """
-    Import data stored in a folder identified by its path.
-    Return a list containing all the arrays present in the folder.
-    """
-    # Init container
-    data = []
+
+    # Init dictionary
+    data = {}
     # Save in a list all files present in the folder
     DirList = os.listdir(data_path)
-    #
-    for j, track_path in enumerate(DirList):
-
+    # Loop over all files contained in the fold
+    for track_path in DirList:
+        # Extract track name and type (radar or ground truth)
+        track_type, track_name = track_path.split('.')[0].split('_', 1)
+        # Extract track values
         track = np.load(data_path + track_path)
+        # Populate dict values for each track_name key
+        if track_name in data:
+            # If key exists, add info of the second track
+            data[track_name][track_type] = track
+        else:
+            # If key does not exist, define the value as a new dict
+            data[track_name] = {track_type: track}
 
-        min_ = np.min(track, axis=0)
-        max_ = np.max(track, axis=0)
-
-        norm_track = (track - min_) / (max_ - min_)
-
-        track_data = {'format': track_path.split('_')[0],
-                      'shape_': track_path.split('_')[1],
-                      'number': int(track_path.split('_')[2][0]),
-                      'track': track,
-                      'track_norm': norm_track,
-                      'min': min_,
-                      'max': max_}
-
-        #track = min_max_scale(track)
-        data.append(track_data)
-
-        # print('Track {} saved'.format(track_path))
-
-    return data #pd.DataFrame(data)
+    return data
 
 
 
@@ -107,17 +95,25 @@ def convert_to_cartesian(track):
 
 
 
-if __name__ == "__main__":
-
+def main():
     with open('autoencoder.pkl', 'rb') as file:
         predictor = pickle.load(file)
 
-    tracks_list = import_data()
-    track = tracks_list[3]
+    tracks = import_data()
+    print(tracks.keys())
+    track_radar, track_gt = tracks['circle_2'].values()
 
-    print(track['format'], track['shape_'], track['number'], '\n\n')
+    # Compute minimum and maximum for each component
+    min_ = np.min(track_radar, axis=0)
+    max_ = np.max(track_radar, axis=0)
+    # Compute the normalized track component-wise
+    track_radar_norm = (track_radar - min_) / (max_ - min_)
 
-    track_predicted_norm = predict_track(track['track_norm'], predictor)
-    track_predicted = track_predicted_norm * (track['max'] - track['min']) + track['min']
+    track_radar_pred = predict_track(track_radar_norm, predictor) * (max_ - min_) + min_
 
-    plot_comparison(track['track'], track_predicted, var_index=0)
+    plot_comparison(track_radar, track_radar_pred, var_index=0)
+
+
+
+if __name__ == "__main__":
+    main()
