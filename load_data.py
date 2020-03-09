@@ -66,9 +66,10 @@ def main():
 
     noisy_data_1 = GenerateNoisyData(data, seed = 1, p = 0.1, variance = 0.5)
     noisy_data_2 = GenerateNoisyData(data, seed = 2, p = 0.4, variance = 0.05)
+    noisy_data_3 = GenerateNoisyData(data, seed = 3, p = 0.7, variance = 0.25)
 
-    data_noisy = np.concatenate((data, noisy_data_1, noisy_data_2), axis=0)
-    data_augmented = np.concatenate((data, data, data), axis=0)
+    data_noisy = np.concatenate((data, noisy_data_1, noisy_data_2, noisy_data_3), axis=0)
+    data_augmented = np.concatenate((data, data, data, data), axis=0)
 
     np.save(OUT_NOISY_PATH, data_noisy)
     print('Data noisy saved in ', OUT_NOISY_PATH)

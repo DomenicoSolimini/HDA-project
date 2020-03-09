@@ -96,7 +96,7 @@ def convert_to_cartesian(track_radar):
 
 
 
-def compute_RMSD(track1, track2):
+def compute_RMSE(track1, track2):
     return np.sqrt(np.nanmean(np.power(track1 - track2, 2)))
 
 
@@ -107,7 +107,8 @@ def main():
         predictor = pickle.load(file)
     # Define input argument (name of the track to be selected)
     parser = argparse.ArgumentParser()
-    parser.add_argument('--track', type=str, default='circle_2')
+
+    parser.add_argument('--track', type=str, default= "circle_3")
     args = parser.parse_args()
     # Load track data
     tracks = import_data()
@@ -124,8 +125,8 @@ def main():
     # Plot the comparison between radar tracks (measured and predicted)
     plot_comparison(track_radar, track_radar_pred, var_index=0)
     # Convert the track in cartesian coordinates and compute the RMSD
-    rmsd = compute_RMSD(convert_to_cartesian(track_radar_pred), track_gt.T)
-    print('RMSD: %.3f' % rmsd)
+    rmse = compute_RMSE(convert_to_cartesian(track_radar_pred), track_gt.T)
+    print('RMSE: %.3f' % rmse)
 
 
 
