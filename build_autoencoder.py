@@ -10,8 +10,8 @@ from keras.utils import plot_model
 from keras.callbacks import EarlyStopping
 from keras.layers import Input, Dense, Flatten, Reshape, Dropout
 
-DATA_AUG_PATH = 'data_augmented.npy'
-DATA_NOISY_PATH = 'data_noisy.npy'
+DATA_AUG_PATH = 'data/data_augmented.npy'
+DATA_NOISY_PATH = 'data/data_noisy.npy'
 MODEL_PATH = 'autoencoder.pkl'
 TRACK_SHAPE = (496, 3)
 

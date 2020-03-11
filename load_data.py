@@ -2,9 +2,9 @@ import os
 import numpy as np
 import pickle
 
-DATA_PATH = './all_tracks/'
-OUT_NOISY_PATH = 'data_noisy.npy'
-OUT_AUG_PATH = 'data_augmented.npy'
+DATA_PATH = 'data/all_tracks/'
+OUT_NOISY_PATH = 'data/data_noisy.npy'
+OUT_AUG_PATH = 'data/data_augmented.npy'
 
 
 def import_data(data_path=DATA_PATH, shape=None, axis=0):

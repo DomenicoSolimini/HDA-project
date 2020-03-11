@@ -5,7 +5,10 @@ import os
 import re
 import matplotlib.pyplot as plt
 
-DATA_PATH = "gt_tracks/"
+
+DATA_PATH = "data/gt_tracks/"
+OUT_CLEAN_PATH = "data/gt_tracks_clean/"
+
 
 def import_data(data_path=DATA_PATH, shape=None, axis=0):
 
@@ -109,6 +112,7 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--track', type=str, default= "circle_3")
+    #parser.add_argument('--plot', type=)
     args = parser.parse_args()
     # Load track data
     tracks = import_data()
@@ -123,10 +127,13 @@ def main():
     # Compute the predicted track and renormalize it
     track_radar_pred = predict_track(track_radar_norm, predictor) * (max_ - min_) + min_
     # Plot the comparison between radar tracks (measured and predicted)
-    plot_comparison(track_radar, track_radar_pred, var_index=0)
+    # plot_comparison(track_radar, track_radar_pred, var_index=0)
     # Convert the track in cartesian coordinates and compute the RMSD
     rmse = compute_RMSE(convert_to_cartesian(track_radar_pred), track_gt.T)
-    print('RMSE: %.3f' % rmse)
+    # Print RMSE metric
+    print(args.track, ' RMSE: %.3f' % rmse)
+    # Save clean track
+    np.save(OUT_CLEAN_PATH + args.track + ".npy", track_radar_pred)
 
 
 
