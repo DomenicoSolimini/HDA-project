@@ -10,6 +10,9 @@ from keras.utils import plot_model
 from keras.callbacks import EarlyStopping
 from keras.layers import Input, Dense, Flatten, Reshape, Dropout
 
+# Ignores future warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 DATA_AUG_PATH = 'data/data_augmented.npy'
 DATA_NOISY_PATH = 'data/data_noisy.npy'
 MODEL_PATH = 'autoencoder.pkl'

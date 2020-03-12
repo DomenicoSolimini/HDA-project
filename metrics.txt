@@ -1,0 +1,9 @@
+circle_1 	 RMSE: 0.311
+circle_2 	 RMSE: 0.343
+circle_3 	 RMSE: 0.212
+line_1 	 RMSE: 0.175
+line_2 	 RMSE: 0.152
+line_3 	 RMSE: 0.164
+zigzag_1 	 RMSE: 0.420
+zigzag_2 	 RMSE: 0.394
+zigzag_3 	 RMSE: 0.422

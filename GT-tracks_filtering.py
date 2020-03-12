@@ -5,6 +5,8 @@ import os
 import re
 import matplotlib.pyplot as plt
 
+# Ignores future warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 DATA_PATH = "data/gt_tracks/"
 OUT_CLEAN_PATH = "data/gt_tracks_clean/"
@@ -100,7 +102,7 @@ def convert_to_cartesian(track_radar):
 
 
 def compute_RMSE(track1, track2):
-    return np.sqrt(np.nanmean(np.power(track1 - track2, 2)))
+    return np.sqrt(np.mean(np.linalg.norm(track1 - track2, axis = 0, ord = 2)**2))
 
 
 
@@ -131,7 +133,7 @@ def main():
     # Convert the track in cartesian coordinates and compute the RMSD
     rmse = compute_RMSE(convert_to_cartesian(track_radar_pred), track_gt.T)
     # Print RMSE metric
-    print(args.track, ' RMSE: %.3f' % rmse)
+    print(args.track, '\t RMSE: %.3f' % rmse)
     # Save clean track
     np.save(OUT_CLEAN_PATH + args.track + ".npy", track_radar_pred)
 
